@@ -1,7 +1,7 @@
 """Table views for daily and monthly statistics display.
 
 This module provides UI components for displaying aggregated usage data
-in table format using Rich library.
+in table format using Rich library, with beautiful graph visualizations.
 """
 
 import logging
@@ -15,6 +15,13 @@ from rich.text import Text
 
 # Removed theme import - using direct styles
 from claude_monitor.utils.formatting import format_currency, format_number
+
+# Import graph visualizations
+try:
+    from claude_monitor.ui.graphs import SpendGraphs, create_spend_summary_box
+    GRAPHS_AVAILABLE = True
+except ImportError:
+    GRAPHS_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -324,7 +331,7 @@ class TableViewsController:
         token_limit: int,
         console: Optional[Console] = None,
     ) -> None:
-        """Display aggregated view with table and summary.
+        """Display aggregated view with table, summary, and beautiful graphs.
 
         Args:
             data: Aggregated data
@@ -372,13 +379,61 @@ class TableViewsController:
         table = self.create_aggregate_table(data, totals, view_mode, timezone)
 
         # Display using console if provided
-        if console:
-            console.print(summary_panel)
-            console.print()
-            console.print(table)
-        else:
-            from rich import print as rprint
+        output_console = console or Console()
 
-            rprint(summary_panel)
-            rprint()
-            rprint(table)
+        # Show summary
+        output_console.print(summary_panel)
+        output_console.print()
+
+        # Show beautiful graphs if available
+        if GRAPHS_AVAILABLE:
+            try:
+                graphs = SpendGraphs(output_console)
+
+                if view_mode == "daily":
+                    # Daily spend bar graph
+                    daily_graph = graphs.create_daily_spend_graph(data, width=90, height=14)
+                    output_console.print(Panel(
+                        daily_graph,
+                        title="[bold cyan]💰 Daily Spend Graph[/]",
+                        border_style="cyan",
+                        padding=(0, 1)
+                    ))
+                    output_console.print()
+
+                    # Trend line graph
+                    trend_graph = graphs.create_model_cost_graph(data, width=90, height=10)
+                    output_console.print(Panel(
+                        trend_graph,
+                        title="[bold magenta]📈 Spend Trend[/]",
+                        border_style="magenta",
+                        padding=(0, 1)
+                    ))
+                    output_console.print()
+
+                elif view_mode == "monthly":
+                    # Monthly spend graph
+                    monthly_graph = graphs.create_monthly_spend_graph(data, width=90, height=12)
+                    output_console.print(Panel(
+                        monthly_graph,
+                        title="[bold green]📊 Monthly Spend Graph[/]",
+                        border_style="green",
+                        padding=(0, 1)
+                    ))
+                    output_console.print()
+
+                # Token distribution graph for both views
+                token_graph = graphs.create_token_breakdown_graph(totals, width=70, height=10)
+                output_console.print(Panel(
+                    token_graph,
+                    title="[bold yellow]🔢 Token Distribution[/]",
+                    border_style="yellow",
+                    padding=(0, 1)
+                ))
+                output_console.print()
+
+            except Exception as e:
+                logger.warning(f"Could not render graphs: {e}")
+
+        # Show the data table
+        output_console.print(table)
