@@ -207,7 +207,6 @@ logs/
 /MAIN_INSTRUCTION.md
 /CLAUDE_SYSTEM_PROMPT.md
 /claude_optimize.py
-/CLAUDE.md
 /src/Claude-Code-Usage-Monitor_Features_Missing_in_claude_monitor.md
 /src/Functionality_Coverage_Claude-Code-Usage-Monitor_Missing_From_claude_monitor.md
 /TODO.md
