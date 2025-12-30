@@ -385,52 +385,32 @@ class TableViewsController:
         output_console.print(summary_panel)
         output_console.print()
 
-        # Show beautiful graphs if available
+        # Show a simple, clean spend graph if available (optional - minimal visual noise)
         if GRAPHS_AVAILABLE:
             try:
                 graphs = SpendGraphs(output_console)
 
                 if view_mode == "daily":
-                    # Daily spend bar graph
-                    daily_graph = graphs.create_daily_spend_graph(data, width=90, height=14)
+                    # Just one clean daily spend graph - no trend lines or token breakdown
+                    daily_graph = graphs.create_daily_spend_graph(data, width=80, height=10)
                     output_console.print(Panel(
                         daily_graph,
-                        title="[bold cyan]💰 Daily Spend Graph[/]",
-                        border_style="cyan",
-                        padding=(0, 1)
-                    ))
-                    output_console.print()
-
-                    # Trend line graph
-                    trend_graph = graphs.create_model_cost_graph(data, width=90, height=10)
-                    output_console.print(Panel(
-                        trend_graph,
-                        title="[bold magenta]📈 Spend Trend[/]",
-                        border_style="magenta",
+                        title="[dim]Daily Spend[/]",
+                        border_style="dim",
                         padding=(0, 1)
                     ))
                     output_console.print()
 
                 elif view_mode == "monthly":
-                    # Monthly spend graph
-                    monthly_graph = graphs.create_monthly_spend_graph(data, width=90, height=12)
+                    # Just one clean monthly graph
+                    monthly_graph = graphs.create_monthly_spend_graph(data, width=80, height=10)
                     output_console.print(Panel(
                         monthly_graph,
-                        title="[bold green]📊 Monthly Spend Graph[/]",
-                        border_style="green",
+                        title="[dim]Monthly Spend[/]",
+                        border_style="dim",
                         padding=(0, 1)
                     ))
                     output_console.print()
-
-                # Token distribution graph for both views
-                token_graph = graphs.create_token_breakdown_graph(totals, width=70, height=10)
-                output_console.print(Panel(
-                    token_graph,
-                    title="[bold yellow]🔢 Token Distribution[/]",
-                    border_style="yellow",
-                    padding=(0, 1)
-                ))
-                output_console.print()
 
             except Exception as e:
                 logger.warning(f"Could not render graphs: {e}")

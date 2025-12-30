@@ -75,23 +75,8 @@ class SpendGraphs:
         plt.clear_figure()
         plt.plotsize(width, height)
 
-        # Create bar chart with gradient colors based on cost
-        max_cost = max(costs) if costs else 1
-        colors = []
-        for cost in costs:
-            ratio = cost / max_cost if max_cost > 0 else 0
-            if ratio > 0.8:
-                colors.append("red+")
-            elif ratio > 0.6:
-                colors.append("orange+")
-            elif ratio > 0.4:
-                colors.append("yellow+")
-            elif ratio > 0.2:
-                colors.append("cyan+")
-            else:
-                colors.append("green+")
-
-        plt.bar(dates, costs, color=colors, fill=True)
+        # Simple monochrome bars - cleaner look
+        plt.bar(dates, costs, color="gray+", fill=True)
 
         # Styling
         plt.title(f"💰 {title} (Last {len(data)} Days)")
@@ -137,22 +122,8 @@ class SpendGraphs:
         plt.clear_figure()
         plt.plotsize(width, height)
 
-        # Create horizontal bar chart for months (more readable)
-        colors = ["green", "cyan", "blue", "magenta", "yellow", "red"][:len(months)]
-
-        # Calculate gradient colors based on cost
-        max_cost = max(costs) if costs else 1
-        bar_colors = []
-        for cost in costs:
-            ratio = cost / max_cost if max_cost > 0 else 0
-            if ratio > 0.7:
-                bar_colors.append("magenta+")
-            elif ratio > 0.4:
-                bar_colors.append("blue+")
-            else:
-                bar_colors.append("cyan+")
-
-        plt.bar(months, costs, color=bar_colors, fill=True)
+        # Simple monochrome bars - cleaner look
+        plt.bar(months, costs, color="gray+", fill=True)
 
         # Styling
         plt.title(f"📊 {title}")
